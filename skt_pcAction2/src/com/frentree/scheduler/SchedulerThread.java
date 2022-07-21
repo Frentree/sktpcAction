@@ -101,326 +101,50 @@ public class SchedulerThread implements Runnable{
 			for (schedulePathActionVo paVo : paList) {
 				paVo.setName(vo.getName());
 				paVo.setAction(vo.getAction());
-				if(vo.getRrn_cnt() != 0) {
-					if(paVo.getType1() >= vo.getRrn_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
+				
+				if((vo.getRrn_cnt() != 0 && paVo.getType1() >= vo.getRrn_cnt()) || (vo.getForeigner_cnt() != 0 && paVo.getType2() >= vo.getForeigner_cnt()) ||
+					(vo.getPassport_cnt() != 0 && paVo.getType3() >= vo.getPassport_cnt()) || (vo.getDriver_cnt() != 0 && vo.getDriver_cnt() >= paVo.getType3()) ||
+					(vo.getAccount_cnt() != 0 && paVo.getType5() >= vo.getAccount_cnt()) || (vo.getCard_cnt() != 0 && paVo.getType6() >= vo.getCard_cnt()) ||
+					(vo.getEmail_cnt() != 0 && paVo.getType7() >= vo.getEmail_cnt()) || (vo.getMobile_phone_cnt() != 0 && paVo.getType8() >= vo.getMobile_phone_cnt())) {
+					
+					if(vo.getAction() == 1) { // 즉시 삭제
+						JSONArray pathIdArr = new JSONArray();
+						paVo.setSuccess(1);
+						
+						// 즉시 삭제
+						if(paVo.getFid() != null && !paVo.getFid().equals("")) {
+							pathIdArr.put(paVo.getFid());
+							succes = executeDeleteRun(paVo, pathIdArr);
+						} else { // DB 찾은후 삭제
+							List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
 							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
+							for (String fvo : fList) {
+								pathIdArr.put(fvo);
 							}
 							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
+							succes = executeDeleteRun(paVo, pathIdArr);
 						}
+						
+						if(succes == 1) {
+							this.sqlMap.insert("insert.actionJob", paVo);
+						}
+						
+					} else if(vo.getAction() == 2){ // 즉시 암호화
+						paVo.setSuccess(1);
+						this.sqlMap.insert("insert.actionJob", paVo);
+						this.sqlMap.insert("insert.drmJob", paVo);
+						
+					} else if(vo.getAction() == 3){// 익일 삭제
+						paVo.setSuccess(0);
+						this.sqlMap.insert("insert.actionJob", paVo);
+						
+					} else if(vo.getAction() == 4){// 익일 암호화
+						paVo.setSuccess(0);
+						this.sqlMap.insert("insert.actionJob", paVo);
+						
 					}
 				}
-				if(vo.getForeigner_cnt() != 0) {
-					if(paVo.getType2() >= vo.getForeigner_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
-				if(vo.getPassport_cnt() != 0) {
-					if(paVo.getType3() >= vo.getPassport_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
-				if(vo.getDriver_cnt() != 0) {
-					if(paVo.getType4() >= vo.getDriver_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
-				if(vo.getAccount_cnt() != 0) {
-					if(paVo.getType5() >= vo.getAccount_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
-				if(vo.getCard_cnt() != 0) {
-					if(paVo.getType6() >= vo.getCard_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
-				if(vo.getEmail_cnt() != 0) {
-					if(paVo.getType7() >= vo.getEmail_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
-				if(vo.getMobile_phone_cnt() != 0) {
-					if(paVo.getType8() >= vo.getMobile_phone_cnt()) {
-						if(vo.getAction() == 1) { // 즉시 삭제
-							JSONArray pathIdArr = new JSONArray();
-							paVo.setSuccess(1);
-							
-							// 즉시 삭제
-							if(paVo.getFid() != null && !paVo.getFid().equals("")) {
-								pathIdArr.put(paVo.getFid());
-								succes = executeDeleteRun(paVo, pathIdArr);
-							} else { // DB 찾은후 삭제
-								List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
-								
-								for (String fvo : fList) {
-									pathIdArr.put(fvo);
-								}
-								
-								succes = executeDeleteRun(paVo, pathIdArr);
-							}
-							
-							if(succes == 1) {
-								this.sqlMap.insert("insert.actionJob", paVo);
-							}
-							
-						} else if(vo.getAction() == 2){ // 즉시 암호화
-							paVo.setSuccess(1);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							this.sqlMap.insert("insert.drmJob", paVo);
-							
-						} else if(vo.getAction() == 3){// 익일 삭제
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						} else if(vo.getAction() == 4){// 익일 암호화
-							paVo.setSuccess(0);
-							this.sqlMap.insert("insert.actionJob", paVo);
-							
-						}
-					}
-				}
+				
 			}
 			
 		}catch (Exception e) {
