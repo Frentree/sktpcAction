@@ -103,9 +103,8 @@ public class SchedulerThread implements Runnable{
 				paVo.setAction(vo.getAction());
 				
 				if((vo.getRrn_cnt() != 0 && paVo.getType1() >= vo.getRrn_cnt()) || (vo.getForeigner_cnt() != 0 && paVo.getType2() >= vo.getForeigner_cnt()) ||
-					(vo.getPassport_cnt() != 0 && paVo.getType3() >= vo.getPassport_cnt()) || (vo.getDriver_cnt() != 0 && vo.getDriver_cnt() >= paVo.getType3()) ||
 					(vo.getAccount_cnt() != 0 && paVo.getType5() >= vo.getAccount_cnt()) || (vo.getCard_cnt() != 0 && paVo.getType6() >= vo.getCard_cnt()) ||
-					(vo.getEmail_cnt() != 0 && paVo.getType7() >= vo.getEmail_cnt()) || (vo.getMobile_phone_cnt() != 0 && paVo.getType8() >= vo.getMobile_phone_cnt())) {
+					(vo.getMobile_phone_cnt() != 0 && paVo.getType8() >= vo.getMobile_phone_cnt())) {
 					
 					if(vo.getAction() == 1) { // 즉시 삭제
 						JSONArray pathIdArr = new JSONArray();
