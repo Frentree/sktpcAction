@@ -164,7 +164,6 @@ public class SchedulerThread implements Runnable{
 		String api_ver = AppConfig.getProperty("config.recon.api.version");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		
-		
 		String curlurl = String.format("-k -X POST -u %s:%s 'https://%s:%s/%s/targets/%s/locations/%s/remediation/delete'",
 				user, pass, ip, port, api_ver, paVo.getTarget_id(), "8987302884414283716");
 		
