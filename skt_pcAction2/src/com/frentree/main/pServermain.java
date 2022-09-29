@@ -42,7 +42,7 @@ public class pServermain {
 		logger.info(" 2. Update : log4j > logback ");
 		logger.info(" 3. file : >>> " + file);
 		AppConfig.setPID(getPID() + "");
-		wrtiePID(AppConfig.getPID());
+		wrtiePID(AppConfig.getPID()); 
 
 		new Thread(new SchedulerThread()).start();
 		new Thread(new TomorowActionThread()).start();
