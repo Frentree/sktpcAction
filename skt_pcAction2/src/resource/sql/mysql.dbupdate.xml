@@ -11,4 +11,20 @@
 		  AND TARGET_ID = #target_id#
 		  AND AP_NO = #ap_no#
 	</update>
+	
+	<update id="remediateFindJob" parameterClass="com.recon.util.database.ibatis.vo.remediateActionVo">
+		UPDATE pi_find
+		SET DELDATE = NULL,
+			PATH = #path#
+		WHERE TARGET_ID = #target_id#
+			AND AP_NO = #ap_no#
+			AND PATH = #path_orig#
+	</update>
+	
+	<update id="remediation_chkJob" parameterClass="com.recon.util.database.ibatis.vo.remediateActionVo">
+		UPDATE drm_job
+		SET REMEDIATION_CHK = '1'
+		WHERE HOSTNAME = #name#
+			AND HASH_ID = #hash_id#
+	</update>
 </sqlMap>

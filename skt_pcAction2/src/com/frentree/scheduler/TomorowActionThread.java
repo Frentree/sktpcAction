@@ -20,6 +20,7 @@ import com.recon.util.database.ibatis.SqlMapInstance;
 import com.recon.util.database.ibatis.tr.DBInsertTable;
 import com.recon.util.database.ibatis.vo.netSchduleStatusVo;
 import com.recon.util.database.ibatis.vo.netScheduleVo;
+import com.recon.util.database.ibatis.vo.remediateActionVo;
 import com.recon.util.database.ibatis.vo.schedulePathActionVo;
 import com.recon.util.database.ibatis.vo.scheduleTargetsVo;
 import com.recon.util.database.ibatis.vo.scheduleTomorowActionVo;
@@ -51,9 +52,12 @@ public class TomorowActionThread implements Runnable{
 	}
 	
 	private void executeAction() {
+		List<scheduleTargetsVo> sList = null;
 		List<schedulePathActionVo> list = null;
+		
 		int success = 0;
 		try {
+			sList = this.sqlMap.queryForList("query.getScheduleCompletTarget");
 			list = this.sqlMap.queryForList("query.getTomorrowPathID");
 			
 			if(list.size() > 0) {
@@ -90,6 +94,31 @@ public class TomorowActionThread implements Runnable{
 					this.sqlMap.insert("update.actionJob", vo);
 				}
 				
+			}
+			
+			for (scheduleTargetsVo sVo : sList) {
+				if(sVo.getAction() == 4) {
+					//익일 암호화 정책일시 DRM 리스트 추출
+					List<remediateActionVo> rList = this.sqlMap.queryForList("query.getDRMList");
+					
+					for (remediateActionVo rvo : rList) {
+						//경로명에 확장자 앞에  _decrypted 추가 
+						updatePathDecrypted(rvo);
+						rvo.setAction(4);
+						logger.info("remediate Insert >> " + rvo);
+						
+						//pi_remediate 테이블 삽입
+						this.sqlMap.insert("insert.remediateJob", rvo);
+						
+						rvo.setPath(rvo.getPath().replaceAll("\\\\\\\\", "\\\\"));
+						rvo.setPath_orig(rvo.getPath_orig().replaceAll("\\\\\\\\", "\\\\"));
+						
+						//해당 경로 pi_find에서 deldate null
+						this.sqlMap.insert("update.remediateFindJob", rvo);
+						//pi_remediate 한번 쌓이면 flag값을 줘서 다시 안쌓이도록 업데이트 진행
+						this.sqlMap.insert("update.remediation_chkJob", rvo);
+					}
+				}
 			}
 			
 			
@@ -197,6 +226,25 @@ public class TomorowActionThread implements Runnable{
 		netSchduleStatusVo sVo = new netSchduleStatusVo(g.getId(), vo.getAp_no());
 		
 		return sVo;
+	}
+	
+	private String updatePathDecrypted(remediateActionVo rvo) {
+		String pathOrig = rvo.getPath();
+		String decryptedPath = "";
+		int index = pathOrig.lastIndexOf(".");
+		String extension = pathOrig.substring(index + 1);
+		
+		if(index > 0) {
+			decryptedPath = pathOrig.substring(0, index) + "_decrypted." + extension;
+		}else {
+			decryptedPath = pathOrig;
+		}
+		
+		rvo.setPath_orig(pathOrig);
+		rvo.setPath(decryptedPath);
+		
+		return decryptedPath;
+		
 	}
 	
 	

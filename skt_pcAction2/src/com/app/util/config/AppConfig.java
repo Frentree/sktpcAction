@@ -36,15 +36,15 @@ public class AppConfig {
 	public static HashMap<String, String> account = new HashMap();
 	
 	static {
-
 		currentDir = System.getProperty("user.dir");
 		File f = new File(currentDir);
 		currentDir = f.getParent().toString();
 
-		LOGJ_PATH = currentDir + "/conf/log4j.server.properties";
+		//LOGJ_PATH = currentDir + "/conf/log4j.server.properties";
 		CONF_PATH = currentDir + "/conf/server.properties";
 
-		System.setProperty("log4j.configurationFile", "file:/" + LOGJ_PATH);
+		//PropertyConfigurator.configure(AppConfig.getLOGJ_PATH());
+		//System.setProperty("log4j.configurationFile", "file:/" + LOGJ_PATH);
 
 		LocaleMessageFromResource();
 
@@ -156,13 +156,13 @@ public class AppConfig {
 		FileInputStream fis;
 
 		try {
-			lis = new FileInputStream(LOGJ_PATH);
+			//lis = new FileInputStream(LOGJ_PATH);
 			fis = new FileInputStream(CONF_PATH);
 
-			props.load(lis);
+			//props.load(lis);
 			props.load(fis);
 
-			lis.close();
+			//lis.close();
 			fis.close();
 
 		} catch (FileNotFoundException e) {

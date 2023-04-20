@@ -100,7 +100,8 @@
 		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'TROY') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
 		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'AMERICAN EXPRESS') > 0 THEN S.MATCH_COUNT ELSE 0 END) + 
 		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'EMAIL') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN MOBILE PHONE NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END) ) )							AS TYPE
+		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN MOBILE PHONE NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END) ) )							AS TYPE,
+		                 F.DELDATE
 			FROM pi_find F
 			  LEFT OUTER JOIN SKT_NET_SCHEDULE_ACTION NSA ON F.HASH_ID = NSA.HASH_ID AND F.AP_NO = NSA.AP_NO AND F.TARGET_ID = NSA.TARGET_ID
 			  LEFT OUTER JOIN pi_summary S ON F.TARGET_ID = S.TARGET_ID AND F.AP_NO = S.AP_NO AND F.HASH_ID = S.OBJECT_ID
@@ -109,7 +110,6 @@
 			  AND F.AP_NO = #ap_no#
 			  AND NSA.HASH_ID IS NULL
 			  AND F.REMEDIATION_STATUS IS NULL
-			  AND F.DELDATE IS NULL
 			  AND NOT SUBSTRING_INDEX(F.PATH,'.',-1) IN <iterate open ="(" close=")" conjunction="," property="fileArray"> #fileArray[]# </iterate>
 			GROUP BY F.TARGET_ID, F.AP_NO, F.HASH_ID) D
 		<!-- WHERE D.COUNT >= 50 -->
@@ -171,5 +171,27 @@
 		  AND S.AP_NO = #ap_no#
 		  AND RIGHT(S.SCHEDULE_LABEL, 3) != 'DRM'
 		  AND S.SCHEDULE_STATUS IN ('SCHEDULED', 'SCANNING', 'PAUSED')
+	</select>
+	
+	<select id="getDRMList" parameterClass="String" resultClass="com.recon.util.database.ibatis.vo.remediateActionVo">
+		SELECT T.TARGET_ID,
+				T.AP_NO,
+				T.NAME,
+				DRM.PATH,
+				DRM.HASH_ID,
+				DRM.TYPE,
+				DRM.CATEGORY_NO,
+				DRM.DONE,
+				DRM.SUCCESS,
+				DRM.RESULT,
+				DRM.REMEDIATION_CHK,
+				DRM.REGDATE
+		FROM drm_job drm, pi_targets T
+		WHERE drm.hostname = t.name
+		AND drm.type = 'encrypt'
+		AND result LIKE ' return 1%'
+		AND drm.remediation_chk = '0'
+		AND t.target_use = 'Y'
+		AND DATE_FORMAT(drm.regdate, '%Y-%m-%d') > DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -30 DAY), '%Y-%m-%d')
 	</select>
 </sqlMap>

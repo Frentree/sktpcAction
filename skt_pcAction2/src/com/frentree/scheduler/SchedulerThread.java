@@ -24,6 +24,7 @@ import com.recon.util.database.ibatis.tr.DBInsertTable;
 import com.recon.util.database.ibatis.vo.netSchduleStatusVo;
 import com.recon.util.database.ibatis.vo.netScheduleIdVo;
 import com.recon.util.database.ibatis.vo.netScheduleVo;
+import com.recon.util.database.ibatis.vo.remediateActionVo;
 import com.recon.util.database.ibatis.vo.schedulePathActionVo;
 import com.recon.util.database.ibatis.vo.scheduleTargetsVo;
 
@@ -62,13 +63,14 @@ public class SchedulerThread implements Runnable{
 			list = this.sqlMap.queryForList("query.getScheduleCompletTarget");
 			
 			/*
-			 * 1. 망/그룹/PC 검색 완료한 검출 스케쥴 검색
+			 * 1. 망/그룹/PC 검색 완료한 검출 스케줄 검색
 			 * 2. 검색 진행중인 항목 next_scan이 현재 시간이 지낫는데 현재 상태가 scheduled 인 항목 stop 처리
 			 * 3. 정책별 익일 암호화, 익일 삭제, 즉시 삭제, 즉시 암호화
 			 * 
 			 */
 			for (scheduleTargetsVo vo : list) {
 				logger.info("Server Name : " + vo.getName() + ", Schedule Action " );
+				
 				executeAction(vo);
 			}
 			
@@ -113,15 +115,18 @@ public class SchedulerThread implements Runnable{
 						// 즉시 삭제
 						if(paVo.getFid() != null && !paVo.getFid().equals("")) {
 							pathIdArr.put(paVo.getFid());
-							succes = executeDeleteRun(paVo, pathIdArr);
+							if(paVo.getDeldate() == null) {
+								succes = executeDeleteRun(paVo, pathIdArr);
+							}
 						} else { // DB 찾은후 삭제
 							List<String> fList = this.sqlMap.queryForList("query.getFindPathID", paVo);
 							
 							for (String fvo : fList) {
 								pathIdArr.put(fvo);
 							}
-							
-							succes = executeDeleteRun(paVo, pathIdArr);
+							if(paVo.getDeldate() == null) {
+								succes = executeDeleteRun(paVo, pathIdArr);
+							}
 						}
 						
 						if(succes == 1) {
@@ -145,6 +150,31 @@ public class SchedulerThread implements Runnable{
 				}
 				
 			}
+			
+			
+			if(vo.getAction() == 2) {
+				//즉시 암호화 정책일시 DRM 리스트 추출
+				List<remediateActionVo> rList = this.sqlMap.queryForList("query.getDRMList");
+				
+				for (remediateActionVo rvo : rList) {
+					//경로명에 확장자 앞에  _decrypted 추가 
+					updatePathDecrypted(rvo);
+					rvo.setAction(2);
+					logger.info("remediate Insert >> " + rvo);
+					
+					//pi_remediate 테이블 삽입
+					this.sqlMap.insert("insert.remediateJob", rvo);
+					
+					rvo.setPath(rvo.getPath().replaceAll("\\\\\\\\", "\\\\"));
+					rvo.setPath_orig(rvo.getPath_orig().replaceAll("\\\\\\\\", "\\\\"));
+					
+					//해당 경로 pi_find에서 deldate null
+					this.sqlMap.insert("update.remediateFindJob", rvo);
+					//pi_remediate 한번 쌓이면 flag값을 줘서 다시 안쌓이도록 업데이트 진행
+					this.sqlMap.insert("update.remediation_chkJob", rvo);
+				}
+			}
+			
 			
 		}catch (Exception e) {
 			logger.error(e.toString());
@@ -251,6 +281,24 @@ public class SchedulerThread implements Runnable{
 		return sVo;
 	}
 	
+	private String updatePathDecrypted(remediateActionVo rvo) {
+		String pathOrig = rvo.getPath();
+		String decryptedPath = "";
+		int index = pathOrig.lastIndexOf(".");
+		String extension = pathOrig.substring(index + 1);
+		
+		if(index > 0) {
+			decryptedPath = pathOrig.substring(0, index) + "_decrypted." + extension;
+		}else {
+			decryptedPath = pathOrig;
+		}
+		
+		rvo.setPath_orig(pathOrig);
+		rvo.setPath(decryptedPath);
+		
+		return decryptedPath;
+		
+	}
 	
 
 }

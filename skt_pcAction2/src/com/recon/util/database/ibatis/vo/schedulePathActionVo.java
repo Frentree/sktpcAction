@@ -21,6 +21,7 @@ public class schedulePathActionVo {
 	private int type8;
 	private int type;
 	private String file;
+	private String deldate;
 	
 	public String getHash_id() {
 		return hash_id;
@@ -130,6 +131,18 @@ public class schedulePathActionVo {
 	public void setType(int type) {
 		this.type = type;
 	}
+	public String getFile() {
+		return file;
+	}
+	public void setFile(String file) {
+		this.file = file;
+	}
+	public String getDeldate() {
+		return deldate;
+	}
+	public void setDeldate(String deldate) {
+		this.deldate = deldate;
+	}
 	
 	@Override
 	public String toString() {
@@ -137,7 +150,7 @@ public class schedulePathActionVo {
 				+ name + ", ap_no=" + ap_no + ", path=" + path + ", count=" + count + ", success=" + success
 				+ ", action=" + action + ", type1=" + type1 + ", type2=" + type2 + ", type3=" + type3 + ", type4="
 				+ type4 + ", type5=" + type5 + ", type6=" + type6 + ", type7=" + type7 + ", type8=" + type8 + ", type="
-				+ type + "]";
+				+ type + ", file=" + file + ", deldate=" + deldate + "]";
 	}
 	
 }
