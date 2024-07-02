@@ -41,7 +41,7 @@ public class TomorowActionThread implements Runnable{
 		// TODO Auto-generated method stub
 		try {
 			while(true) {
-				//executeAction();
+				executeAction();
 				
 				Thread.sleep(3000);
 			}
