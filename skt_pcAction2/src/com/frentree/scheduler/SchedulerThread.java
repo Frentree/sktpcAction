@@ -27,6 +27,7 @@ import com.recon.util.database.ibatis.vo.netScheduleVo;
 import com.recon.util.database.ibatis.vo.remediateActionVo;
 import com.recon.util.database.ibatis.vo.schedulePathActionVo;
 import com.recon.util.database.ibatis.vo.scheduleTargetsVo;
+import com.recon.util.database.ibatis.vo.piCustomPatternVo;
 
 public class SchedulerThread implements Runnable{
 	private static Logger logger = LoggerFactory.getLogger(SchedulerThread.class);
@@ -55,12 +56,8 @@ public class SchedulerThread implements Runnable{
 	}
 	
 	private void getSchedules() {
-		List<scheduleTargetsVo> list = null;
-		
-		List<netSchduleStatusVo> nList = new ArrayList<>();
-		
 		try {
-			list = this.sqlMap.queryForList("query.getScheduleCompletTarget");
+			List<scheduleTargetsVo> list = this.sqlMap.queryForList("query.getScheduleCompletTarget");
 			
 			/*
 			 * 1. 망/그룹/PC 검색 완료한 검출 스케줄 검색
@@ -91,22 +88,32 @@ public class SchedulerThread implements Runnable{
 		int succes = 0;
 		
 		try {
-			String file = AppConfig.getProperty("config.file.extension");
-			String[] fileArray = file.split(",");
-			vo.setFileArray(fileArray);
 			paList = this.sqlMap.queryForList("query.getFindPath", vo);
 			logger.info("Size : " + paList.size());
 			if(paList.size() > 0 ) {
 				logger.info(vo.getName() + " Server Count : " + paList.size());
 			}
 			
+			int type1_cnt = Integer.parseInt(vo.getType1_cnt());
+			int type2_cnt = Integer.parseInt(vo.getType2_cnt());
+			int type3_cnt = Integer.parseInt(vo.getType3_cnt());
+			int type4_cnt = Integer.parseInt(vo.getType4_cnt());
+			int type5_cnt = Integer.parseInt(vo.getType5_cnt());
+			int type6_cnt = Integer.parseInt(vo.getType6_cnt());
+			int type7_cnt = Integer.parseInt(vo.getType7_cnt());
+			int type8_cnt = Integer.parseInt(vo.getType8_cnt());
+			/*int type9_cnt = Integer.parseInt(vo.getType9_cnt());
+			int type10_cnt = Integer.parseInt(vo.getType10_cnt());*/
+			
 			for (schedulePathActionVo paVo : paList) {
 				paVo.setName(vo.getName());
 				paVo.setAction(vo.getAction());
 				
-				if((vo.getRrn_cnt() != 0 && paVo.getType1() >= vo.getRrn_cnt()) || (vo.getForeigner_cnt() != 0 && paVo.getType2() >= vo.getForeigner_cnt()) ||
-					(vo.getAccount_cnt() != 0 && paVo.getType5() >= vo.getAccount_cnt()) || (vo.getCard_cnt() != 0 && paVo.getType6() >= vo.getCard_cnt()) ||
-					(vo.getMobile_phone_cnt() != 0 && paVo.getType8() >= vo.getMobile_phone_cnt())) {
+				if((type1_cnt != 0 && paVo.getType1() >= type1_cnt) || (type2_cnt != 0 && paVo.getType2() >= type2_cnt) ||
+					(type3_cnt != 0 && paVo.getType3() >= type3_cnt) || (type4_cnt != 0 && paVo.getType4() >= type4_cnt) ||
+					(type5_cnt != 0 && paVo.getType5() >= type5_cnt) || (type6_cnt != 0 && paVo.getType6() >= type6_cnt) ||
+					(type7_cnt != 0 && paVo.getType7() >= type7_cnt) || (type8_cnt != 0 && paVo.getType8() >= type8_cnt)) {
+					/*(type9_cnt != 0 && paVo.getType9() >= type9_cnt) || (type10_cnt != 0 && paVo.getType10() >= type10_cnt)) {*/
 					
 					if(vo.getAction() == 1) { // 즉시 삭제
 						JSONArray pathIdArr = new JSONArray();

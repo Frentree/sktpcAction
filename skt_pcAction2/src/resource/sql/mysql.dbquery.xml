@@ -3,7 +3,7 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"  "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
 <sqlMap namespace="query">
-	<select id="getScheduleCompletTarget" parameterClass="String" resultClass="com.recon.util.database.ibatis.vo.scheduleTargetsVo">
+	<select id="getScheduleCompletTarget" parameterClass="java.util.Map" resultClass="com.recon.util.database.ibatis.vo.scheduleTargetsVo">
 		SELECT
 			T.TARGET_ID,
 			T.AP_NO,
@@ -13,46 +13,27 @@
 			SP.POLICY_NAME,
 			SP.ACTION,
 			FROM_UNIXTIME(SL.UPDATED) AS SCHEDULE_TIME,
-			SP.STD_ID
-			,rrn				AS RRN
-			,rrn_cnt			AS RRN_CNT
-			,rrn_dup			AS RRN_DUP
-			,foreigner			AS FOREIGNER
-			,foreigner_cnt		AS FOREIGNER_CNT
-			,foreigner_dup		AS FOREIGNER_DUP
-			,driver				AS DRIVER
-			,driver_cnt			AS DRIVER_CNT
-			,driver_dup			AS DRIVER_DUP
-			,passport			AS PASSPORT
-			,passport_cnt		AS PASSPORT_CNT
-			,passport_dup		AS PASSPORT_DUP
-			,ACCOUNT			AS ACCOUNT
-			,account_cnt		AS ACCOUNT_CNT
-			,account_dup		AS ACCOUNT_DUP
-			,card				AS CARD
-			,card_cnt			AS CARD_CNT
-			,card_dup			AS CARD_DUP
-			,phone				AS PHONE
-			,phone_cnt			AS PHONE_CNT
-			,phone_dup			AS PHONE_DUP
-			,mobile_phone		AS MOBILE_PHONE
-			,mobile_phone_cnt	AS MOBILE_PHONE_CNT
-			,mobile_phone_dup	AS MOBILE_PHONE_DUP
-			,local_phone		AS LOCAL_PHONE
-			,local_phone_cnt	AS LOCAL_PHONE_CNT
-			,local_phone_dup	AS LOCAL_PHONE_DUP
-			,email				AS EMAIL
-			,email_cnt			AS EMAIL_CNT
-			,email_dup			AS EMAIL_DUP
-			,policy_type 		AS POLICY_TYPE
-			,DU.recent AS RECENT
-		FROM pi_targets T
+			SP.STD_ID,
+			DU.TYPE1_CNT,
+			DU.TYPE2_CNT,
+			DU.TYPE3_CNT,
+			DU.TYPE4_CNT,
+			DU.TYPE5_CNT,
+			DU.TYPE6_CNT,
+			DU.TYPE7_CNT,
+			DU.TYPE8_CNT,
+			<!-- DU.TYPE9_CNT,
+			DU.TYPE10_CNT, -->
+			DU.ENABLE
+		FROM pi_ap_server AP, pi_targets T
 		  LEFT OUTER JOIN PI_SCHEDULES S ON T.AP_NO = S.AP_NO AND T.TARGET_ID = S.SCHEDULE_TARGET_ID
 		  LEFT OUTER JOIN pi_scheduled_location SL ON SL.AP_NO = S.AP_NO AND S.SCHEDULE_ID = SL.SCH_ID
 		  LEFT OUTER JOIN skt_net_schedule NS ON T.NET_ID = NS.NET_ID
 		  LEFT OUTER JOIN pi_scan_policy SP ON NS.POLICY_ID = SP.IDX
-		  LEFT OUTER JOIN PI_DATATYPES_USER DU ON SP.STD_ID = DU.STD_ID
-		WHERE T.AP_NO != 0
+		  LEFT OUTER JOIN v_datatypes_cnt DU ON SP.STD_ID = DU.STD_ID
+		WHERE T.AP_NO = AP.AP_NO
+		  <!-- AND AP.IS_SERVER = 0 -->
+		  AND T.AP_NO = 1
 		  AND SP.ACTION != 0
 		  AND S.SCHEDULE_STATUS IN ('completed', 'stopped', 'interrupted')
 		  AND SL.LOCATION_ID = '8987302884414283716'
@@ -63,46 +44,24 @@
 	
 	<select id="getFindPath" parameterClass="com.recon.util.database.ibatis.vo.scheduleTargetsVo" resultClass="com.recon.util.database.ibatis.vo.schedulePathActionVo" >
 		SELECT D.* FROM (
-			SELECT F.HASH_ID, F.FID, F.TARGET_ID, F.AP_NO, F.PATH,
-			SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN RRN') > 0 THEN S.MATCH_COUNT ELSE 0 END)						AS TYPE1,
-		               SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN FOREIGNER NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END)		AS TYPE2,
-		               SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN PASSPORT') > 0 THEN S.MATCH_COUNT ELSE 0 END)				AS TYPE3,
-		               SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN DRIVER LICENSE NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END)	AS TYPE4,
-		               SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'ACCOUNT NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END)						AS TYPE5,
-		               (SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'VISA') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'MAESTRO') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'PRIVATE LABEL CARD') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'DINERS CLUB') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'JCB') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'LASER') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'MASTERCARD') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'CHINA UNION PAY') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'DISCOVER') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'TROY') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'AMERICAN EXPRESS') > 0 THEN S.MATCH_COUNT ELSE 0 END) )					AS TYPE6,
-		               SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'EMAIL') > 0 THEN S.MATCH_COUNT ELSE 0 END)		AS TYPE7,
-		               SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN MOBILE PHONE NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END)		AS TYPE8,
-
-		               ( SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN DRIVER LICENSE NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END) + 
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN FOREIGNER NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END) + 
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN PASSPORT') > 0 THEN S.MATCH_COUNT ELSE 0 END) + 
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN RRN') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'ACCOUNT NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END) + 
-		                (SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'VISA') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'MAESTRO') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'PRIVATE LABEL CARD') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'DINERS CLUB') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'JCB') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'LASER') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'MASTERCARD') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'CHINA UNION PAY') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'DISCOVER') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'TROY') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'AMERICAN EXPRESS') > 0 THEN S.MATCH_COUNT ELSE 0 END) + 
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'EMAIL') > 0 THEN S.MATCH_COUNT ELSE 0 END) +
-		                 SUM(CASE WHEN INSTR(UPPER(S.DATA_TYPE), 'SOUTH KOREAN MOBILE PHONE NUMBER') > 0 THEN S.MATCH_COUNT ELSE 0 END) ) )							AS TYPE,
-		                 F.DELDATE
-			FROM pi_find F
+			SELECT F.HASH_ID, 
+				F.FID, 
+				F.TARGET_ID, 
+				F.AP_NO, 
+				F.PATH,
+				SUM(CASE WHEN CP.PATTERN_IDX = 1 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE1,
+				SUM(CASE WHEN CP.PATTERN_IDX = 2 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE2,
+				SUM(CASE WHEN CP.PATTERN_IDX = 3 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE3,
+				SUM(CASE WHEN CP.PATTERN_IDX = 4 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE4,
+				SUM(CASE WHEN CP.PATTERN_IDX = 5 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE5,
+				SUM(CASE WHEN CP.PATTERN_IDX = 6 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE6,
+				SUM(CASE WHEN CP.PATTERN_IDX = 7 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE7,
+				SUM(CASE WHEN CP.PATTERN_IDX = 8 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE8,
+				<!-- SUM(CASE WHEN CP.PATTERN_IDX = 9 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE9,
+				SUM(CASE WHEN CP.PATTERN_IDX = 10 THEN S.MATCH_COUNT ELSE 0 END) AS TYPE10, -->
+				SUM(S.MATCH_COUNT) AS TYPE,
+		        F.DELDATE
+			FROM pi_custom_pattern CP, pi_find F
 			  LEFT OUTER JOIN SKT_NET_SCHEDULE_ACTION NSA ON F.HASH_ID = NSA.HASH_ID AND F.AP_NO = NSA.AP_NO AND F.TARGET_ID = NSA.TARGET_ID
 			  LEFT OUTER JOIN pi_summary S ON F.TARGET_ID = S.TARGET_ID AND F.AP_NO = S.AP_NO AND F.HASH_ID = S.OBJECT_ID
 			WHERE F.AP_NO != 0
@@ -110,9 +69,8 @@
 			  AND F.AP_NO = #ap_no#
 			  AND NSA.HASH_ID IS NULL
 			  AND F.REMEDIATION_STATUS IS NULL
-			  AND NOT SUBSTRING_INDEX(F.PATH,'.',-1) IN <iterate open ="(" close=")" conjunction="," property="fileArray"> #fileArray[]# </iterate>
+			  AND INSTR(UPPER(S.DATA_TYPE), CP.PATTERN_CODE) > 0
 			GROUP BY F.TARGET_ID, F.AP_NO, F.HASH_ID) D
-		<!-- WHERE D.COUNT >= 50 -->
 	</select>
 	
 	<select id="getFindPathID" parameterClass="com.recon.util.database.ibatis.vo.schedulePathActionVo" resultClass="String" >
@@ -194,4 +152,12 @@
 		AND t.target_use = 'Y'
 		AND DATE_FORMAT(drm.regdate, '%Y-%m-%d') > DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -30 DAY), '%Y-%m-%d')
 	</select>
+	
+	<select id="queryCustomDataTypes" resultClass="com.recon.util.database.ibatis.vo.piCustomPatternVo">
+    	SELECT CP.PATTERN_IDX, 
+		  CP.PATTERN_KR_NAME,
+		  CP.PATTERN_CODE
+		FROM pi_custom_pattern CP 
+		GROUP BY CP.PATTERN_IDX
+    </select>
 </sqlMap>

@@ -1,6 +1,9 @@
 package com.recon.util.database.ibatis.vo;
 
 import java.util.Arrays;
+import java.util.List;
+
+import com.recon.util.database.ibatis.vo.piCustomPatternVo;
 
 public class scheduleTargetsVo {
 	
@@ -14,17 +17,17 @@ public class scheduleTargetsVo {
 	private String action_nm;
 	private String schedule_time;
 	private String std_id;
-	private int rrn_cnt;
-	private int foreigner_cnt;
-	private int driver_cnt;
-	private int passport_cnt;
-	private int account_cnt;
-	private int card_cnt;
-	private int phone_cnt;
-	private int mobile_phone_cnt;
-	private int local_phone_cnt;
-	private int email_cnt;
-	private String[] fileArray;
+	private String type1_cnt;
+	private String type2_cnt;
+	private String type3_cnt;
+	private String type4_cnt;
+	private String type5_cnt;
+	private String type6_cnt;
+	private String type7_cnt;
+	private String type8_cnt;
+	private String type9_cnt;
+	private String type10_cnt;
+	private String enable;
 	
 	public String getTarget_id() {
 		return target_id;
@@ -86,82 +89,82 @@ public class scheduleTargetsVo {
 	public void setStd_id(String std_id) {
 		this.std_id = std_id;
 	}
-	public int getRrn_cnt() {
-		return rrn_cnt;
+	public String getType1_cnt() {
+		return type1_cnt;
 	}
-	public void setRrn_cnt(int rrn_cnt) {
-		this.rrn_cnt = rrn_cnt;
+	public void setType1_cnt(String type1_cnt) {
+		this.type1_cnt = type1_cnt;
 	}
-	public int getForeigner_cnt() {
-		return foreigner_cnt;
+	public String getType2_cnt() {
+		return type2_cnt;
 	}
-	public void setForeigner_cnt(int foreigner_cnt) {
-		this.foreigner_cnt = foreigner_cnt;
+	public void setType2_cnt(String type2_cnt) {
+		this.type2_cnt = type2_cnt;
 	}
-	public int getDriver_cnt() {
-		return driver_cnt;
+	public String getType3_cnt() {
+		return type3_cnt;
 	}
-	public void setDriver_cnt(int driver_cnt) {
-		this.driver_cnt = driver_cnt;
+	public void setType3_cnt(String type3_cnt) {
+		this.type3_cnt = type3_cnt;
 	}
-	public int getPassport_cnt() {
-		return passport_cnt;
+	public String getType4_cnt() {
+		return type4_cnt;
 	}
-	public void setPassport_cnt(int passport_cnt) {
-		this.passport_cnt = passport_cnt;
+	public void setType4_cnt(String type4_cnt) {
+		this.type4_cnt = type4_cnt;
 	}
-	public int getAccount_cnt() {
-		return account_cnt;
+	public String getType5_cnt() {
+		return type5_cnt;
 	}
-	public void setAccount_cnt(int account_cnt) {
-		this.account_cnt = account_cnt;
+	public void setType5_cnt(String type5_cnt) {
+		this.type5_cnt = type5_cnt;
 	}
-	public int getCard_cnt() {
-		return card_cnt;
+	public String getType6_cnt() {
+		return type6_cnt;
 	}
-	public void setCard_cnt(int card_cnt) {
-		this.card_cnt = card_cnt;
+	public void setType6_cnt(String type6_cnt) {
+		this.type6_cnt = type6_cnt;
 	}
-	public int getPhone_cnt() {
-		return phone_cnt;
+	public String getType7_cnt() {
+		return type7_cnt;
 	}
-	public void setPhone_cnt(int phone_cnt) {
-		this.phone_cnt = phone_cnt;
+	public void setType7_cnt(String type7_cnt) {
+		this.type7_cnt = type7_cnt;
 	}
-	public int getMobile_phone_cnt() {
-		return mobile_phone_cnt;
+	public String getType8_cnt() {
+		return type8_cnt;
 	}
-	public void setMobile_phone_cnt(int mobile_phone_cnt) {
-		this.mobile_phone_cnt = mobile_phone_cnt;
+	public void setType8_cnt(String type8_cnt) {
+		this.type8_cnt = type8_cnt;
 	}
-	public int getLocal_phone_cnt() {
-		return local_phone_cnt;
+	public String getType9_cnt() {
+		return type9_cnt;
 	}
-	public void setLocal_phone_cnt(int local_phone_cnt) {
-		this.local_phone_cnt = local_phone_cnt;
+	public void setType9_cnt(String type9_cnt) {
+		this.type9_cnt = type9_cnt;
 	}
-	public int getEmail_cnt() {
-		return email_cnt;
+	public String getType10_cnt() {
+		return type10_cnt;
 	}
-	public void setEmail_cnt(int email_cnt) {
-		this.email_cnt = email_cnt;
+	public void setType10_cnt(String type10_cnt) {
+		this.type10_cnt = type10_cnt;
 	}
-	public String[] getFileArray() {
-		return fileArray;
+	public String getEnable() {
+		return enable;
 	}
-	public void setFileArray(String[] fileArray) {
-		this.fileArray = fileArray;
+	public void setEnable(String enable) {
+		this.enable = enable;
 	}
 	
 	@Override
 	public String toString() {
 		return "scheduleTargetsVo [target_id=" + target_id + ", ap_no=" + ap_no + ", name=" + name + ", schedule_id="
 				+ schedule_id + ", policy_id=" + policy_id + ", policy_name=" + policy_name + ", action=" + action
-				+ ", action_nm=" + action_nm + ", schedule_time=" + schedule_time + ", std_id=" + std_id + ", rrn_cnt="
-				+ rrn_cnt + ", foreigner_cnt=" + foreigner_cnt + ", driver_cnt=" + driver_cnt + ", passport_cnt="
-				+ passport_cnt + ", account_cnt=" + account_cnt + ", card_cnt=" + card_cnt + ", phone_cnt=" + phone_cnt
-				+ ", mobile_phone_cnt=" + mobile_phone_cnt + ", local_phone_cnt=" + local_phone_cnt + ", email_cnt="
-				+ email_cnt + ", fileArray=" + Arrays.toString(fileArray) + "]";
+				+ ", action_nm=" + action_nm + ", schedule_time=" + schedule_time + ", std_id=" + std_id
+				+ ", type1_cnt=" + type1_cnt + ", type2_cnt=" + type2_cnt + ", type3_cnt=" + type3_cnt + ", type4_cnt="
+				+ type4_cnt + ", type5_cnt=" + type5_cnt + ", type6_cnt=" + type6_cnt + ", type7_cnt=" + type7_cnt
+				+ ", type8_cnt=" + type8_cnt + ", type9_cnt=" + type9_cnt + ", type10_cnt=" + type10_cnt + ", enable="
+				+ enable + "]";
 	}
 	
 }
