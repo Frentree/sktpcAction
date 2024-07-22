@@ -12,7 +12,7 @@
 		  AND AP_NO = #ap_no#
 	</update>
 	
-	<update id="remediateFindJob" parameterClass="com.recon.util.database.ibatis.vo.remediateActionVo">
+	<!-- <update id="remediateFindJob" parameterClass="com.recon.util.database.ibatis.vo.remediateActionVo">
 		UPDATE pi_find
 		SET DELDATE = NULL,
 			PATH = #path#
@@ -26,5 +26,5 @@
 		SET REMEDIATION_CHK = '1'
 		WHERE HOSTNAME = #name#
 			AND HASH_ID = #hash_id#
-	</update>
+	</update> -->
 </sqlMap>

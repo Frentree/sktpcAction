@@ -44,12 +44,13 @@ public class SchedulerThread implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			while(true) {
-				getSchedules();
-				
-				Thread.sleep(15000);
-			}
 			
+			getSchedules();
+//			while(true) {
+//				getSchedules();
+//				Thread.sleep(15000);
+//			}
+//			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -159,7 +160,7 @@ public class SchedulerThread implements Runnable{
 			}
 			
 			
-			if(vo.getAction() == 2) {
+			/*if(vo.getAction() == 2) {
 				//즉시 암호화 정책일시 DRM 리스트 추출
 				List<remediateActionVo> rList = this.sqlMap.queryForList("query.getDRMList");
 				
@@ -180,7 +181,7 @@ public class SchedulerThread implements Runnable{
 					//pi_remediate 한번 쌓이면 flag값을 줘서 다시 안쌓이도록 업데이트 진행
 					this.sqlMap.insert("update.remediation_chkJob", rvo);
 				}
-			}
+			}*/
 			
 			
 		}catch (Exception e) {

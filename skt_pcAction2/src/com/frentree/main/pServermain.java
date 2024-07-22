@@ -20,7 +20,6 @@ public class pServermain {
 	private static String PID = null;
 	public static String currentDir = null;
 	private static BlockingQueue<pServermain> queue = null;
-	public static String file = AppConfig.getProperty("config.file.extension");
 
 	private static String customer_id = "";
 	public static void main(String[] args) {
@@ -29,14 +28,13 @@ public class pServermain {
 		File f = new File(currentDir);
 		currentDir = f.getParent().toString();
 
-		Logger logger = LoggerFactory.getLogger(pServermain.class);
 		LOGJ_PATH = currentDir + "/conf/logbackAction.xml";
 		System.setProperty("logback.configurationFile", LOGJ_PATH);
-
-		
-		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+		Logger logger = LoggerFactory.getLogger(pServermain.class);
+		//Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 		AppConfig.setPID(getPID() + "");
 		wrtiePID(AppConfig.getPID());
+	
 
 		customer_id = AppConfig.getProperty("config.customer");
 
@@ -44,10 +42,10 @@ public class pServermain {
 		logger.info(">> Home Dir :" + AppConfig.currentDir);
 		logger.info("SKT Network Schedule Action START");
 		logger.info("Crete(date) 2022-03");
-		logger.info(" Mod(date) 2022-04-27");
+		logger.info(" Mod(date) 2024-07-03");
 		logger.info(" 1. SKT Network PC Scan ");
 		logger.info(" 2. Update : log4j > logback ");
-		logger.info(" 3. file : >>> " + file);
+		logger.info(" 3. Update : column change data ");
 
 		new Thread(new SchedulerThread()).start();
 		new Thread(new TomorowActionThread()).start();

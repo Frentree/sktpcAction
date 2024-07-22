@@ -40,11 +40,11 @@ public class TomorowActionThread implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			while(true) {
-				executeAction();
-				
-				Thread.sleep(3000);
-			}
+			executeAction();
+//			while(true) {
+//				executeAction();
+//				Thread.sleep(3000);
+//			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -96,7 +96,7 @@ public class TomorowActionThread implements Runnable{
 				
 			}
 			
-			for (scheduleTargetsVo sVo : sList) {
+			/*for (scheduleTargetsVo sVo : sList) {
 				if(sVo.getAction() == 4) {
 					//익일 암호화 정책일시 DRM 리스트 추출
 					List<remediateActionVo> rList = this.sqlMap.queryForList("query.getDRMList");
@@ -119,7 +119,7 @@ public class TomorowActionThread implements Runnable{
 						this.sqlMap.insert("update.remediation_chkJob", rvo);
 					}
 				}
-			}
+			}*/
 			
 			
 		} catch (Exception e) {

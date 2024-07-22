@@ -131,7 +131,7 @@
 		  AND S.SCHEDULE_STATUS IN ('SCHEDULED', 'SCANNING', 'PAUSED')
 	</select>
 	
-	<select id="getDRMList" parameterClass="String" resultClass="com.recon.util.database.ibatis.vo.remediateActionVo">
+	<!-- <select id="getDRMList" parameterClass="String" resultClass="com.recon.util.database.ibatis.vo.remediateActionVo">
 		SELECT T.TARGET_ID,
 				T.AP_NO,
 				T.NAME,
@@ -151,7 +151,7 @@
 		AND drm.remediation_chk = '0'
 		AND t.target_use = 'Y'
 		AND DATE_FORMAT(drm.regdate, '%Y-%m-%d') > DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -30 DAY), '%Y-%m-%d')
-	</select>
+	</select> -->
 	
 	<select id="queryCustomDataTypes" resultClass="com.recon.util.database.ibatis.vo.piCustomPatternVo">
     	SELECT CP.PATTERN_IDX, 

@@ -10,13 +10,13 @@
 	</insert>
 
 	<insert id="drmJob" parameterClass="com.recon.util.database.ibatis.vo.schedulePathActionVo">
-		INSERT INTO DRM_JOB (HOSTNAME, PATH, HASH_ID, TYPE)
-		VALUES(#name#, #path#, #hash_id#, 'encrypt')
+		INSERT INTO DRM_JOB (HOSTNAME, PATH, TYPE)
+		VALUES(#name#, #path#, 'encrypt')
 	</insert>
 	
-	<insert id="remediateJob" parameterClass="com.recon.util.database.ibatis.vo.remediateActionVo">
+	<!-- <insert id="remediateJob" parameterClass="com.recon.util.database.ibatis.vo.remediateActionVo">
 		INSERT INTO pi_remediate (ACTION, TARGET_ID, AP_NO, HOSTNAME, PATH_ORIG, PATH, REGDATE)
 		VALUES(#action#, #target_id#, #ap_no#, #name#, #path_orig#, #path#, NOW())
-	</insert>
+	</insert> -->
 
 </sqlMap>
